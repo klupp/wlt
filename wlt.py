@@ -24,6 +24,8 @@ def time_type(t):
 
 parser = argparse.ArgumentParser(description='WLT (Workload TIme) helps you monitor your workload status.')
 parser.add_argument('-wh', '--week_hours', type=int, help='The weekly workload in hours.', default=8)
+parser.add_argument('-hs', '--hourly_salary', type=float, help='Hourly Salary.', default=20.0)
+parser.add_argument('-c', '--currency', help='Hourly Salary.', default='EUR')
 parser.add_argument('-sd', '--start_date', type=date_type, help='The start date of the calculation', default=dt.datetime.today().replace(day=1).date())
 parser.add_argument('-ed', '--end_date', type=date_type, help='The end date of the calculation', default=(dt.datetime.today() + dt.timedelta(days=1)).date())
 parser.add_argument('-wt', '--worked_time', type=time_type, help='The end date of the calculation')
@@ -33,8 +35,8 @@ sd = dt.datetime.today().replace(day=1).date()
 ed = (dt.datetime.today() + dt.timedelta(days=1)).date()
 
 
-def calculate_hours(worked_time, start, end, week_hours=8, all_days=False):
-
+def calculate_hours(worked_time, start, end, week_hours, all_days, hourly_salary, currency):
+    print("Days passed:", np.busday_count(start, end, weekmask='1111111'))
     if not all_days:
         days = np.busday_count(start, end)
         num_work_days = 5
@@ -42,23 +44,28 @@ def calculate_hours(worked_time, start, end, week_hours=8, all_days=False):
         days = np.busday_count(start, end, weekmask='1111111')
         num_work_days = 7
     print("Working days:", days)
+    
+    hours_per_day = week_hours / num_work_days
+    workload_per_day = dt.timedelta(milliseconds = hours_per_day * 3600000)
+    print("Workload per day:", str(workload_per_day))
 
-    total_working_hours = days * (week_hours / num_work_days)
+    total_working_hours = days * (hours_per_day)
     total_working_time = dt.timedelta(milliseconds = total_working_hours * 3600000)
     print("Working time:", str(total_working_time))
-
+    print("With", currency, hourly_salary, "hourly rate you earn", currency, hourly_salary * total_working_hours)
 
     if worked_time != None:
         remaining_working_time = total_working_time - worked_time
         if (remaining_working_time.total_seconds() >= 0):
             print("Remaining working time:", str(remaining_working_time))
         else:
-            print("You have:", str(worked_time - total_working_time), "surplus.")
-    
+            print("You have:", str(worked_time - total_working_time), "surplus.")    
+            
+    print("With this", currency, hourly_salary, "hourly rate you will earn", currency, hourly_salary * (worked_time / dt.timedelta (hours=1)))
     
 
 def main(args):
-    calculate_hours(args.worked_time, args.start_date, args.end_date, args.week_hours, args.all_days)
+    calculate_hours(args.worked_time, args.start_date, args.end_date, args.week_hours, args.all_days, args.hourly_salary, args.currency)
 
 
 if __name__ == "__main__":
