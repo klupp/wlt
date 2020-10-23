@@ -3,7 +3,6 @@ import datetime as dt
 import re
 
 import numpy as np
-from iso4217 import Currency
 
 from model.contract import Contract
 from model.profile import Profile
