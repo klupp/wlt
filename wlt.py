@@ -1,6 +1,7 @@
 import argparse
 import datetime as dt
 import re
+from datetime import date
 
 import numpy as np
 
@@ -52,8 +53,10 @@ def calculate_hours(worked_time, start, end, week_hours, all_days, hourly_salary
     if hourly_salary_amount is not None:
         hourly_salary = Salary(hourly_salary_amount, currency)
 
-    contract = Contract("YYYYY", week_hours, start, end, hourly_salary=hourly_salary)
-    profile = Profile("XXXXXX", [contract])
+    contract1 = Contract("Gamblify", 8, start=date(2019, 11, 1), end=date(2020, 10, 15), hourly_salary=hourly_salary)
+
+    contract2 = Contract("Gamblify", week_hours, start=date(2020, 10, 15), end=end, hourly_salary=hourly_salary)
+    profile = Profile("Aleksandar Kuzmanoski", [contract1, contract2])
 
     if all_days:
         week_mask = np.ones(1, 7)

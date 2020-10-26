@@ -37,14 +37,10 @@ class Contract:
 
         total_working_hours = working_days * hours_per_day
         total_working_time = dt.timedelta(milliseconds=total_working_hours * 3600000)
-        remaining_working_time: timedelta = None
-        if query.worked_time is not None:
-            remaining_working_time = total_working_time - query.worked_time
 
         salary_stats: SalaryStats = None
         if self.hourly_salary is not None:
             salary_stats = self.hourly_salary.stats(query, total_working_hours)
 
         return ContractStats(self, from_date, to_date, working_days, workload_per_week, workload_per_day,
-                             total_working_time,
-                             query.worked_time, remaining_working_time, salary_stats)
+                             total_working_time, salary_stats)

@@ -1,5 +1,4 @@
 from currency_converter import CurrencyConverter
-import datetime as dt
 
 from model.query import Query
 from model.stats import SalaryStats
@@ -12,6 +11,8 @@ class Salary:
         self.converter = CurrencyConverter()
 
     def convert(self, c: str):
+        if self.currency == c:
+            return self
         a = self.converter.convert(self.amount, self.currency, c)
         return Salary(a, c)
 
@@ -23,7 +24,13 @@ class Salary:
 
     def stats(self, query: Query, total_working_hours: float):
         projected_salary = self.mul(total_working_hours)
-        if query.worked_time is not None:
-            earned_salary = self.mul(query.worked_time / dt.timedelta(hours=1))
 
-        return SalaryStats(self, projected_salary, earned_salary)
+        return SalaryStats(self, projected_salary)
+
+    def __add__(self, other):
+        o = other.convert(self.currency)
+        return Salary(self.amount + o.amount, self.currency)
+
+    def __sub__(self, other):
+        o = other.convert(self.currency)
+        return Salary(self.amount - o.amount, self.currency)
