@@ -44,3 +44,15 @@ class Contract:
 
         return ContractStats(self, from_date, to_date, working_days, workload_per_week, workload_per_day,
                              total_working_time, salary_stats)
+
+    def applies(self, query: Query):
+        from_date = max(query.from_date, self.start)
+        if self.end is None:
+            to_date = query.to_date
+        else:
+            to_date = min(query.to_date, self.end)
+
+        if from_date < to_date:
+            return True
+
+        return False
